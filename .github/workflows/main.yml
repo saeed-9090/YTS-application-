@@ -40,29 +40,14 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # Yeh step settings file ko full clean karega aur standard repositories define karega
-    - name: Standardize Settings Configuration
+    # Is baar hum simple single-line commands use kar rahe hain jo settings file ko 100% overwrite kar dengi
+    - name: Force Overwrite Settings File
       run: |
-        cat << 'EOF' > settings.gradle
-        pluginManagement {
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
-        }
-        dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.PRESERVE_EXISTING)
-            repositories {
-                google()
-                mavenCentral()
-                maven { url 'https://jitpack.io' }
-            }
-        }
-        rootProject.name = 'YouTubeShortsAI'
-        include ':app'
-        EOF
-        echo "Settings configuration standardized!"
+        rm -f settings.gradle
+        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle
+        echo "rootProject.name = 'YouTubeShortsAI'" >> settings.gradle
+        echo "include ':app'" >> settings.gradle
+        echo "Settings file overwritten perfectly!"
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
