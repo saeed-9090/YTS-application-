@@ -40,33 +40,6 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # Master Key: Yeh step pure project me jahan jahan gradle files hain, unhe sahi repositories ke sath overwrite kar dega
-    - name: Universal Repository Fixer
-      run: |
-        echo "Fixing all settings.gradle files..."
-        find . -name "settings.gradle" -exec sh -c 'cat << "EOF" > "{}"
-        pluginManagement {
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
-        }
-        dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.PRESERVE_EXISTING)
-            repositories {
-                google()
-                mavenCentral()
-                maven { url "https://jitpack.io" }
-            }
-        }
-        rootProject.name = "YouTubeShortsAI"
-        include ":app"
-        EOF' \;
-
-        echo "Fixing all build.gradle files..."
-        find . -name "build.gradle" -exec sh -c 'echo "repositories { google(); mavenCentral(); maven { url \"https://jitpack.io\" } }" | cat - "{}" > temp && mv temp "{}"' \;
-
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
