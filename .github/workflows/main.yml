@@ -40,15 +40,29 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # Is baar hum simple 'echo' command use kar rahe hain jo bina kisi syntax bug ke direct setting file rewrite kar degi
-    - name: Clean Settings File
+    # Yeh step settings file ko full clean karega aur standard repositories define karega
+    - name: Standardize Settings Configuration
       run: |
-        if [ -f "settings.gradle" ]; then
-          echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle
-          echo "rootProject.name = 'YouTubeShortsAI'" >> settings.gradle
-          echo "include ':app'" >> settings.gradle
-          echo "Settings file cleaned perfectly!"
-        fi
+        cat << 'EOF' > settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.PRESERVE_EXISTING)
+            repositories {
+                google()
+                mavenCentral()
+                maven { url 'https://jitpack.io' }
+            }
+        }
+        rootProject.name = 'YouTubeShortsAI'
+        include ':app'
+        EOF
+        echo "Settings configuration standardized!"
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
@@ -65,3 +79,4 @@ jobs:
         path: |
           app/build/outputs/apk/debug/app-debug.apk
           **/build/outputs/apk/debug/*.apk
+          
