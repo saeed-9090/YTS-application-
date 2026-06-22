@@ -40,13 +40,41 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # Yeh step strict dependency rule ko temporary band karega taake app/build.gradle ki repositories chal sakein
-    - name: Bypass Repository Mode Restrictions
+    # Yeh step settings.gradle ki saari restrictions ko jad se khatam kar dega
+    - name: Overwrite settings.gradle to fix conflicts
       run: |
-        if [ -f "settings.gradle" ]; then
-          sed -i 's/FAIL_ON_PROJECT_REPOS/PRESERVE_EXISTING/g' settings.gradle || true
-          sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PRESERVE_EXISTING/g' settings.gradle || true
-        fi
+        cat << 'EOF' > settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        rootProject.name = "YouTubeShortsAI"
+        include ':app'
+        EOF
+
+    # Yeh master key hai: Yeh globally saari download repositories ko inject kar dega
+    - name: Create Global Init Script
+      run: |
+        mkdir -p ~/.gradle
+        cat << 'EOF' > ~/.gradle/init.gradle
+        allprojects {
+            buildscript {
+                repositories {
+                    google()
+                    mavenCentral()
+                    maven { url 'https://jitpack.io' }
+                }
+            }
+            repositories {
+                google()
+                mavenCentral()
+                maven { url 'https://jitpack.io' }
+            }
+        }
+        EOF
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
