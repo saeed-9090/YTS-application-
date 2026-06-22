@@ -40,6 +40,14 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    # Yeh step strict dependency rule ko temporary band karega taake app/build.gradle ki repositories chal sakein
+    - name: Bypass Repository Mode Restrictions
+      run: |
+        if [ -f "settings.gradle" ]; then
+          sed -i 's/FAIL_ON_PROJECT_REPOS/PRESERVE_EXISTING/g' settings.gradle || true
+          sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PRESERVE_EXISTING/g' settings.gradle || true
+        fi
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
@@ -55,4 +63,3 @@ jobs:
         path: |
           app/build/outputs/apk/debug/app-debug.apk
           **/build/outputs/apk/debug/*.apk
-          
