@@ -40,22 +40,14 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # Master Stroke: Yeh step settings.gradle ke us kharab block ko jadd se mita dega
-    - name: Kill the Settings Bug
+    # Is baar hum simple 'echo' command use kar rahe hain jo bina kisi syntax bug ke direct setting file rewrite kar degi
+    - name: Clean Settings File
       run: |
         if [ -f "settings.gradle" ]; then
-          cat << 'EOF' > settings.gradle
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          rootProject.name = "YouTubeShortsAI"
-          include ':app'
-          EOF
-          echo "Settings file cleaned successfully!"
+          echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle
+          echo "rootProject.name = 'YouTubeShortsAI'" >> settings.gradle
+          echo "include ':app'" >> settings.gradle
+          echo "Settings file cleaned perfectly!"
         fi
 
     - name: Setup Gradle
@@ -73,4 +65,3 @@ jobs:
         path: |
           app/build/outputs/apk/debug/app-debug.apk
           **/build/outputs/apk/debug/*.apk
-          
