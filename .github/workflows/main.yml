@@ -22,8 +22,10 @@ jobs:
     - name: Move files if nested inside a folder
       run: |
         if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+          echo "Files are nested inside a folder. Finding root directory..."
           SUBFOLDER=$(find . -maxdepth 2 -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1 | cut -d'/' -f2)
           if [ ! -z "$SUBFOLDER" ] && [ "$SUBFOLDER" != "." ]; then
+            echo "Moving files from folder: $SUBFOLDER"
             mv "$SUBFOLDER"/* . 2>/dev/null || true
             mv "$SUBFOLDER"/.* . 2>/dev/null || true
           fi
@@ -37,6 +39,14 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+
+    # FFmpeg library ke stable version ko force kar ke update karna taake download ho sake
+    - name: Force Update FFmpeg Library Version
+      run: |
+        if [ -f "app/build.gradle" ]; then
+          sed -i 's/ffmpeg-android-java:1.1.5/ffmpeg-android-java:1.1.6/g' app/build.gradle
+          echo "FFmpeg library updated to stable 1.1.6!"
+        fi
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
