@@ -22,10 +22,8 @@ jobs:
     - name: Move files if nested inside a folder
       run: |
         if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
-          echo "Files are nested inside a folder. Finding root directory..."
           SUBFOLDER=$(find . -maxdepth 2 -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1 | cut -d'/' -f2)
           if [ ! -z "$SUBFOLDER" ] && [ "$SUBFOLDER" != "." ]; then
-            echo "Moving files from folder: $SUBFOLDER"
             mv "$SUBFOLDER"/* . 2>/dev/null || true
             mv "$SUBFOLDER"/.* . 2>/dev/null || true
           fi
@@ -39,15 +37,6 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-
-    # Is baar hum simple single-line commands use kar rahe hain jo settings file ko 100% overwrite kar dengi
-    - name: Force Overwrite Settings File
-      run: |
-        rm -f settings.gradle
-        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle
-        echo "rootProject.name = 'YouTubeShortsAI'" >> settings.gradle
-        echo "include ':app'" >> settings.gradle
-        echo "Settings file overwritten perfectly!"
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
