@@ -40,6 +40,24 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    # Master Stroke: Yeh step settings.gradle ke us kharab block ko jadd se mita dega
+    - name: Kill the Settings Bug
+      run: |
+        if [ -f "settings.gradle" ]; then
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          rootProject.name = "YouTubeShortsAI"
+          include ':app'
+          EOF
+          echo "Settings file cleaned successfully!"
+        fi
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
@@ -55,3 +73,4 @@ jobs:
         path: |
           app/build/outputs/apk/debug/app-debug.apk
           **/build/outputs/apk/debug/*.apk
+          
